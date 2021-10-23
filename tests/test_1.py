@@ -4,7 +4,7 @@ import os
 
 
 try:
-    import si
+    import src.si
 except:
     DIR = os.path.dirname(os.path.realpath(__file__))
     PATH = os.path.join(DIR, '../src/')
@@ -14,7 +14,7 @@ except:
 class TestUnlabeledDataset(unittest.TestCase):
 
     def setUp(self):
-        from si.data import Dataset
+        from src.si.data import Dataset
         self.filename = "datasets/lr-example1.data"
         self.dataset = Dataset.from_data(self.filename, labeled=False)
 
@@ -25,6 +25,6 @@ class TestUnlabeledDataset(unittest.TestCase):
 class TestLabeledDataset(TestUnlabeledDataset):
 
     def setUp(self):
-        from si.data import Dataset
+        from src.si.data import Dataset
         self.filename = "datasets/lr-example1.data"
         self.dataset = Dataset.from_data(self.filename, labeled=True)
