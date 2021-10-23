@@ -1,5 +1,6 @@
 import numpy as np
-from si.util.util import label_gen
+import pandas as pd
+from src.si.util.util import label_gen
 
 __all__ = ['Dataset']
 
@@ -13,8 +14,8 @@ class Dataset:
             raise Exception("Trying to instanciate a DataSet without any data")
         self.X = X
         self.Y = Y
-        self._xnames = xnames if xnames else label_gen(X.shape[1])
-        self._yname = yname if yname else 'Y'
+        self.xnames = xnames if xnames else label_gen(X.shape[1])
+        self.yname = yname if yname else 'Y'
 
     @classmethod
     def from_data(cls, filename, sep=",", labeled=True):
@@ -48,7 +49,7 @@ class Dataset:
         :rtype: [type]
         """
         if ylabel is not None and ylabel in df.columns:
-            X = df.loc[:, df.columns != ylabel].to_numpy()
+            X = df.loc[:, df.columns != ylabel].to_numpy() #transforma num array de numpy
             Y = df.loc[:, ylabel].to_numpy()
             xnames = df.columns.tolist().remove(ylabel)
             yname = ylabel
@@ -92,7 +93,45 @@ class Dataset:
 
     def toDataframe(self):
         """ Converts the dataset into a pandas DataFrame"""
-        pass
+        df = pd.DataFrame(self.X, index=self.Y, columns=self.xnames)
+        df.index.name = self.yname
+        return df
 
     def getXy(self):
         return self.X, self.Y
+
+
+def summary(dataset, format='df'):
+    """ Returns the statistics of a dataset(mean, std, max, min)
+
+    :param dataset: A Dataset object
+    :type dataset: si.data.Dataset
+    :param format: Output format ('df':DataFrame, 'dict':dictionary ), defaults to 'df'
+    :type format: str, optional
+    """
+    if format not in ["df", "dict"]:
+        raise Exception ("Invalid format. Choose between 'df' and 'dict'.")
+    if dataset.hasLabel():
+        data = np.hstack([dataset.X, np.reshape(dataset.Y, (-1, 1))])
+        columns = dataset.xnames[:] + [dataset.yname]
+    else:
+        data = dataset.X
+        columns = dataset.xnames[:]
+
+    _means = np.mean(data, axis=0)
+    _vars = np.var(data, axis=0)
+    _maxs = np.max(data, axis=0)
+    _mins = np.min(data, axis=0)
+    stats = {}
+    for i in range(data.shape[1]):
+        stat = {"mean": _means[i],
+                "var": _vars[i],
+                "max": _maxs[i],
+                "min": _mins[i]
+                }
+        stats[columns[i]] = stat
+
+    if format == "dict":
+        return stats
+    else:
+        return pd.DataFrame.from_dict(stats, orient='index')

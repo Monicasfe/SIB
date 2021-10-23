@@ -47,7 +47,7 @@ class StandardScaler:
             dataset.X = Z
             return dataset
         else:
-            return Dataset(Z, copy(dataset.Y), copy(dataset._xnames), copy(dataset._yname))
+            return Dataset(Z, copy(dataset.Y), copy(dataset.xnames), copy(dataset.yname))
 
 
     def fit_transform(self, dataset, inline=False):
@@ -78,4 +78,9 @@ class StandardScaler:
         -------
         Dataset object
         """
-        pass
+        Z = dataset.X / np.sqrt(self.var) + self.mean
+        if inline:
+            dataset.X = Z
+            return Z
+        else:
+            return Dataset(Z, copy(dataset.Y), copy(dataset.xnames), copy(dataset.yname))

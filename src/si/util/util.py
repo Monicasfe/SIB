@@ -3,7 +3,7 @@ import itertools
 # Y is reserved to idenfify dependent variables
 ALPHA = 'ABCDEFGHIJKLMNOPQRSTUVWXZ'
 
-__all__ = ['label_gen', 'summary']
+__all__ = ['label_gen']#, 'summary']
 
 
 def label_gen(n):
@@ -24,12 +24,12 @@ def label_gen(n):
     return [gen() for _ in range(n)]
 
 
-def summary(dataset, format='df'):
-    """ Returns the statistics of a dataset(mean, std, max, min)
-
-    :param dataset: A Dataset object
-    :type dataset: si.data.Dataset
-    :param format: Output format ('df':DataFrame, 'dict':dictionary ), defaults to 'df'
-    :type format: str, optional
-    """
-    pass
+# def summary(dataset, format='df'):
+#     """ Returns the statistics of a dataset(mean, std, max, min)
+#
+#     :param dataset: A Dataset object
+#     :type dataset: si.data.Dataset
+#     :param format: Output format ('df':DataFrame, 'dict':dictionary ), defaults to 'df'
+#     :type format: str, optional
+#     """
+#     pass
