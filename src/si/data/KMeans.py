@@ -1,6 +1,7 @@
 import numpy as np
 from src.si.util.util import euclidean, manhattan
 
+
 class KMeans:
 
     def __init__(self, k: int, distance, max_iterations = 100):

@@ -4,7 +4,6 @@ from src.si.util.util import label_gen
 
 __all__ = ['Dataset']
 
-
 class Dataset:
     def __init__(self, X=None, Y=None,
                  xnames: list = None,
