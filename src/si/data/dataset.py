@@ -1,5 +1,5 @@
-import numpy as np
 import pandas as pd
+import numpy as np
 from src.si.util.util import label_gen
 
 __all__ = ['Dataset']

@@ -1,7 +1,4 @@
 import numpy as np
-import pandas as pd
-import scipy as scp
-from dataset import *
 from src.si.util.util import euclidean, manhattan
 
 class KMeans:

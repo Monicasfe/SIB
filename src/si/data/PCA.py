@@ -4,7 +4,6 @@ from sklearn.preprocessing import StandardScaler
 
 
 
-
 class PCA:
     def __init__(self, n_components=2, method="svd"): #method  o metodo de calculo
         self.n_components = n_components

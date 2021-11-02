@@ -7,7 +7,6 @@ ALPHA = 'ABCDEFGHIJKLMNOPQRSTUVWXZ'
 
 __all__ = ['label_gen']#, 'summary']
 
-
 def label_gen(n):
     """ Generates a list of n distinct labels similar to Excel"""
     def _iter_all_strings():
