@@ -32,7 +32,7 @@ def euclidean(x, y):
     #dist = (np.absolute(x - y))
     #dist = ((x - y) ** 2).sum(axis=1)
     dist = (x - y) ** 2
-    dist = np.sum(dist)
+    dist = np.sum(dist, axis=1)
     dist = np.sqrt(dist)
     return dist
 

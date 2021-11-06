@@ -22,14 +22,14 @@ class VarianceThreshold:
         cond = self._var > self.threshold #isto  1 array de boelanos
         idxs = [i for i in range(len(cond)) if cond[i]]
         X_trans = X[:, idxs]
-        xnames = [dataset._xnames[i] for i in idxs]
+        xnames = [dataset.xnames[i] for i in idxs]
         if inline:
             dataset.X = X_trans
-            dataset._xnames = xnames
+            dataset.xnames = xnames
             return dataset
         else:
             #from .dataset import Dataset
-            return Dataset(copy(X_trans), copy(dataset.y), xnames, copy(dataset._yname))
+            return Dataset(copy(X_trans), copy(dataset.Y), xnames, copy(dataset.yname))
 
     def fit_transform(self, dataset, inline=False):
         self.fit(dataset)
@@ -40,7 +40,7 @@ class selectKBest:
     Features reduction
     """
 
-    def __init__(self, score_function, K):
+    def __init__(self, K, score_function="f_regression"):
         available_sf = ["f_classif", "f_regression"]
 
         if score_function not in available_sf: #verify if function is available
@@ -64,8 +64,8 @@ class selectKBest:
             warnings.wanr("The K value provided is greater than the number of features. "
                           "All features wil be selected")
             self.K = int(X.shape[1])
-        sel_feats = np.argsort(self.F_stat)[-self.k:]
-
+        sel_feats = np.argsort(self.F_stat)[-self.k:] #ordem de valores F_stats
+        sel_feats = sorted(sel_feats) #ordem das labels
         x = X[:, sel_feats]
         x_names = [Xnames[index] for index in sel_feats]
 
@@ -75,7 +75,7 @@ class selectKBest:
         else:
             return Dataset(x, copy(dataset.Y), x_names, copy(dataset.yname))
 
-    def fit_trasnform(self, dataset, inline= False):
+    def fit_transform(self, dataset, inline=False):
         self.fit(dataset)
         return self.transform(dataset, inline=inline)
 
@@ -91,7 +91,7 @@ def f_classif(dataset):
 def f_regression(dataset):
     X, y = dataset.getXy()
     cor_coef = np.array([stats.pearsonr(X[:, 1], y)[0] for i in range(X.shape[1])])
-    dof = y.size -2 #degrees of freedom
+    dof = y.size - 2 #degrees of freedom
     cor_coef_sqrd = cor_coef ** 2
     F = cor_coef_sqrd / (1 - cor_coef_sqrd) * dof
     p = stats.f.sf(F, 1, dof)
