@@ -100,7 +100,7 @@ class Dataset:
     def toDataframe(self):
         """ Converts the dataset into a pandas DataFrame"""
         if self.hasLabel():
-            df = pd.DataFrame(np.hstack((self.X, self.Y.reshape(len(self.Y), 1))), columns=self.xnames[:]+[self.yname])
+            df = pd.DataFrame(np.hstack((self.X, self.Y.reshape(len(self.Y), 1))), columns=np.hstack((self.xnames, self.yname))) #, columns=self.xnames[:]+[self.yname])
         else:
             df = pd.DataFrame(self.X.copy(), columns=self.xnames[:])
         return df
