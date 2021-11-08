@@ -52,7 +52,7 @@ class KMeans:
                 centroid.append(np.mean(x[idxs == i], axis=0))
             #cent = [np.mean(X[idxs == i], axis=0) for i in range(self.K)]
             self.centroids = np.array(centroid)
-            changed = np.all(old_idxs == idxs) #muda o changed para false
+            changed = np.all(old_idxs == idxs) #muda o changed para true
             old_idxs = idxs
             count += 1
         return self.centroids, old_idxs
