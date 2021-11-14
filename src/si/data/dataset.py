@@ -127,19 +127,32 @@ def summary(dataset, format='df'):
         data = dataset.X
         columns = dataset.xnames[:]
     stats = {}
-    for i in range(data.shape[1]):
-        _means = np.mean(data[:, i], axis=0)
-        _vars = np.var(data[:, i], axis=0)
-        _maxs = np.max(data[:, i], axis=0)
-        _mins = np.min(data[:, i], axis=0)
+    if type(dataset.Y[0]) is str:
+        for i in range(data.shape[1]-1): #ve colunas
+            _means = np.mean(data[:, i], axis=0)
+            _vars = np.var(data[:, i], axis=0)
+            _maxs = np.max(data[:, i], axis=0)
+            _mins = np.min(data[:, i], axis=0)
 
-        stat = {"mean": _means,
-                "var": _vars,
-                "max": _maxs,
-                "min": _mins
-                }
-        stats[columns[i]] = stat
+            stat = {"mean": _means,
+                    "var": _vars,
+                    "max": _maxs,
+                    "min": _mins
+                    }
+            stats[columns[i]] = stat
+    else:
+        for i in range(data.shape[1]):  # ve colunas
+            _means = np.mean(data[:, i], axis=0)
+            _vars = np.var(data[:, i], axis=0)
+            _maxs = np.max(data[:, i], axis=0)
+            _mins = np.min(data[:, i], axis=0)
 
+            stat = {"mean": _means,
+                    "var": _vars,
+                    "max": _maxs,
+                    "min": _mins
+                    }
+            stats[columns[i]] = stat
     # _means = np.mean(data, axis=0)
     # _vars = np.var(data, axis=0)
     # _maxs = np.max(data, axis=0)

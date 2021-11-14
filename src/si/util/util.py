@@ -41,3 +41,27 @@ def manhattan(x, y):
     dist = np.abs(x - y)
     dist = np.sum(dist)
     return dist
+
+def accuracy_score(y_true, y_pred):
+    """
+    Classification performance metric
+    """
+    correct = 0
+    for true, pred in zip(y_true, y_pred):
+        if true == pred:
+            correct += 1
+
+    accuracy = correct / len(y_true)
+    return accuracy
+
+def split_dataset_train_test(dataset, per_div = 0.8): #80 treino 20 teste
+    size = dataset.X.shape[0]
+    m = int(per_div*size) #m is train
+    arr = np.arange(size)
+    from ..data import Dataset
+    train = Dataset(dataset.X[arr[:m]], dataset.Y[arr[:m]], dataset.xnames, dataset.yname)
+    test = Dataset(dataset.X[arr[m:]], dataset.Y[arr[m:]], dataset.xnames, dataset.yname)
+    return train, test
+
+def sigmoid(x):
+    return 1 / (1 + np.exp(-x))
