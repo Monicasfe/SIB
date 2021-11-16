@@ -47,5 +47,6 @@ class PCA:
         return x_red, components_values #vetores ordenados das componentes, a soma da varianacia e os resultados
 
     def explained_variances(self):
-        self.components_values = (self.sorted_e_value / np.sum(self.sorted_e_value))*100#da os valores desde o primiero ate ao nº que selecionamos de componentes
+        sum_val = np.sum(self.sorted_e_value)
+        self.components_values = (self.sorted_e_value / sum_val)*100#da os valores desde o primiero ate ao nº que selecionamos de componentes
         return self.components_values #np.sum(self.components_values), self.components_values # soma dos compomentes e depois o valor de cada um dos componentes tipo 80 (60, 20)

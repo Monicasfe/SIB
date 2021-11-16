@@ -65,3 +65,17 @@ def split_dataset_train_test(dataset, per_div = 0.8): #80 treino 20 teste
 
 def sigmoid(x):
     return 1 / (1 + np.exp(-x))
+
+def mse(y_true, y_pred, squared=True):
+    """
+    Mean square error regresion loss function
+
+    """
+
+    y_true = np.array(y_true)
+    y_pred = np.array(y_pred)
+    errors = np.average((y_true - y_pred) ** 2, axis=0)
+    if not squared:
+        errors = np.sqrt(errors)
+    return np.average(errors)
+
