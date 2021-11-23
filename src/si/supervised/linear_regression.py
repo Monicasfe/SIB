@@ -1,6 +1,6 @@
 from .model import Model
 import numpy as np
-from src.si.util.util import mse
+from src.si.util.util import mse, add_intersect
 
 class LinearRegression(Model):
 
@@ -43,9 +43,12 @@ class LinearRegression(Model):
         x1 = np.hstack(([1], x))
         return np.dot(self.theta, x1)
 
-    def cost(self):
-        y_pred = np.dot(self.X, self.theta)
-        return mse(self.Y, y_pred)/2
+    def cost(self, X=None, Y=None, theta=None):
+        X = add_intersect(X) if X is not None else self.X
+        Y = Y if Y is not None else self.Y
+        theta = theta if theta is not None else self.theta
+        y_pred = np.dot(X, theta)
+        return mse(Y, y_pred)/2
 
 
 class LinearRegressionReg(LinearRegression): #Isto  com regularizacao

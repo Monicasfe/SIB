@@ -69,9 +69,7 @@ def sigmoid(x):
 def mse(y_true, y_pred, squared=True):
     """
     Mean square error regresion loss function
-
     """
-
     y_true = np.array(y_true)
     y_pred = np.array(y_pred)
     errors = np.average((y_true - y_pred) ** 2, axis=0)
@@ -79,3 +77,5 @@ def mse(y_true, y_pred, squared=True):
         errors = np.sqrt(errors)
     return np.average(errors)
 
+def add_intersect(X):
+    return np.hstack((np.ones((X.shape[0], 1)), X))
