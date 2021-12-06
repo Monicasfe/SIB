@@ -39,3 +39,9 @@ class Ensemble(Model):
         Y = Y if Y is not None else self.dataset.Y
         y_pred = np.ma.apply_along_axis(self.predict, axis=0, arr=X.T)
         return self.score(Y, y_pred)
+
+    #um metodo para calular a matriz
+    #um para converter em df
+    #um para dar call da classe
+    #def __call__(self, ....):
+        #return
