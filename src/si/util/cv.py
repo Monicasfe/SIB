@@ -28,15 +28,15 @@ class CrossValidationScore():
             if not self.score:
                 train_scores.append(self.model.cost())
                 test_scores.append(self.model.cost(test.X, test.Y))
-                pred_y.append(y_test)
-                true_y.append(test.Y)
+                pred_y.extend(y_test)
+                true_y.extend(test.Y)
             else:
                 y_train = np.ma.apply_along_axis(self.model.predict, axis=0, arr=train.X.T)
                 train_scores.append(self.score(train.Y, y_train))
                 y_test = np.ma.apply_along_axis(self.model.predict, axis=0, arr=test.X.T)
                 test_scores.append(self.score(test.Y, y_test))
-                pred_y.append(y_test)
-                true_y.append(test.Y)
+                pred_y.extend(y_test)
+                true_y.extend(test.Y)
         self.train_scores = train_scores
         self.test_scores = test_scores
         self.ds = ds

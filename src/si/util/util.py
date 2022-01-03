@@ -111,3 +111,33 @@ def r2_score(y_true, y_pred):
     # R^2.
     score = 1 - numerator / denominator
     return score
+
+def to_categorical(y, num_classes=None, dtype='float32'):
+    y = np.array(y, dtype='int')
+    input_shape = y.shape
+    if input_shape and input_shape[-1] == 1 and len(input_shape) > 1:
+        input_shape = tuple(input_shape[:-1])
+    y = y.ravel()
+    if not num_classes:
+        num_classes = np.max(y) + 1
+    n = y.shape[0]
+    categorical = np.zeros((n, num_classes), dtype=dtype)
+    categorical[np.arange(n), y] = 1
+    output_shape = input_shape + (num_classes,)
+    categorical = np.reshape(categorical, output_shape)
+    return categorical
+
+
+def minibatch(X, batchsize=256, shuffle=True):
+    N = X.shape[0]
+    ix = np.arange(N)
+    n_batches = int(np.ceil(N / batchsize))
+
+    if shuffle:
+        np.random.shuffle(ix)
+
+    def mb_generator():
+        for i in range(n_batches):
+            yield ix[i * batchsize: (i + 1) * batchsize]
+
+    return mb_generator(),
