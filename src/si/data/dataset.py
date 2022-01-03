@@ -50,15 +50,12 @@ class Dataset:
         if ylabel and ylabel in df.columns:
             X = df.loc[:, df.columns != ylabel].to_numpy() #transforma num array de numpy
             Y = df.loc[:, ylabel].to_numpy()
-            print(df.columns)
             # xnames = df.columns.tolist().remove(ylabel)
             yname = ylabel
-            print(yname)
             xnames = df.columns.tolist()
             for name in xnames:
                 if name == yname:
                     xnames.remove(yname)
-            print(xnames)
 
         else:
             X = df.to_numpy()

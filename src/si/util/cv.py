@@ -5,7 +5,7 @@ from src.si.util.util import split_dataset_train_test
 
 class CrossValidationScore():
 
-    def __init__(self, model, dataset, score, **kwargs):
+    def __init__(self, model, dataset, score=None, **kwargs):
         self.model = model
         self.dataset = dataset
         self.score = score
@@ -19,6 +19,8 @@ class CrossValidationScore():
         train_scores = [] #scores dos train
         test_scores = [] #scores dos test
         ds = [] #guarda os datasets, ou seja os resultados dos splits
+        pred_y = []
+        true_y = []
         for _ in range(self.cv): #o _ serve porque no precisamos de chamar o valor da iteracao por isso nao vale a pena guardar
             train, test = split_dataset_train_test(self.dataset, self.split)
             ds.append((train, test))
@@ -26,31 +28,33 @@ class CrossValidationScore():
             if not self.score:
                 train_scores.append(self.model.cost())
                 test_scores.append(self.model.cost(test.X, test.Y))
+                pred_y.append(y_test)
+                true_y.append(test.Y)
             else:
                 y_train = np.ma.apply_along_axis(self.model.predict, axis=0, arr=train.X.T)
                 train_scores.append(self.score(train.Y, y_train))
                 y_test = np.ma.apply_along_axis(self.model.predict, axis=0, arr=test.X.T)
                 test_scores.append(self.score(test.Y, y_test))
-
+                pred_y.append(y_test)
+                true_y.append(test.Y)
         self.train_scores = train_scores
         self.test_scores = test_scores
         self.ds = ds
+        self.pred_y = pred_y
+        self.true_y = true_y
         return train_scores, test_scores
 
     def to_dataframe(self):
         import pandas as pd
         assert self.train_scores and self.test_scores, "Need to run the run function first"
-        return pd.DataFrame({"Train Sores" : self.train_scores, "Test scores": self.test_scores})
+        return pd.DataFrame({"Train Sores": self.train_scores, "Test scores": self.test_scores})
 
 class GridSearchCV():
 
     def __init__(self, model, dataset, parameters, **kwargs):
         """
-
         :param model: modelo em causa
         :param dataset: o dataset escolhido
-        :param parameters: uma lista
-        :param kwargs:
         """
         self.model = model
         self.dataset = dataset
@@ -81,20 +85,18 @@ class GridSearchCV():
         import pandas as pd
         assert self.results, "The grid search needs to be ran"
         data = {}
-        #cria as 2 primeiras colunas
         for i, k in enumerate(self.parameters.keys()):
-            print(k)
             v = []
             for r in self.results:
-                print()
-                print(r)
                 v.append(r[0][i])
-                # print()
-                # print(v)
-            data[k] = v #{} em que as keys so 1º epochs com a ordem de ocorrencia e depois lr por ordem de ocorrencia
-            #print(data)
-            print(len(r[1][i]))
+            data[k] = v
+        for i in range(len(self.results[0][1][0])):
+            train = []
+            test = []
+            for r in self.results:
+                train.append(r[1][0][i])
+                test.append(r[1][1][i])
+                data[f"Train {str(i + 1)} Scores"] = train
+                data[f"Test {str(i + 1)} Scores"] = test
 
-
-        return pd.DataFrame({"Train Sores" : self.train_scores, "Test scores": self.test_scores})
-
+        return pd.DataFrame.from_dict(data=data)

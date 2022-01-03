@@ -58,6 +58,7 @@ def split_dataset_train_test(dataset, per_div = 0.8): #80 treino 20 teste
     size = dataset.X.shape[0]
     m = int(per_div*size) #m is train
     arr = np.arange(size)
+    np.random.shuffle(arr)
     from ..data import Dataset
     train = Dataset(dataset.X[arr[:m]], dataset.Y[arr[:m]], dataset.xnames, dataset.yname)
     test = Dataset(dataset.X[arr[m:]], dataset.Y[arr[m:]], dataset.xnames, dataset.yname)

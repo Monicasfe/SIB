@@ -2,7 +2,7 @@ import numpy as np
 from src.si.supervised.model import Model
 from scipy import signal
 from abc import ABC, abstractmethod
-from src.si.util.util import mse
+from src.si.util.util import mse, mse_prime
 
 
 
@@ -44,7 +44,17 @@ class Dense(Layer):
         return self.output
 
     def backward(self, output_error, lr):
-        raise NotImplementedError
+        #compute rhe weights error dE/dW = X.T * cE/dY
+        weights_error = np.dot(self.input.T, output_error)
+        #compute the bias error dE/dB = dE/dY
+        bias_error = np.sum(output_error, axis=0)
+        #error dE/dX to pass on to the previous layer
+        input_error = np.dot(output_error, self.weights.T)
+        #update parameters
+        self.weights -= lr * weights_error
+        self.bias -= lr * bias_error
+        return input_error
+
 
 class Activation(Layer):
 
@@ -61,30 +71,55 @@ class Activation(Layer):
         return self.output
 
     def backward(self, output_error, lr):
-        raise NotImplementedError
+        #lr is not used because there is no "learnable" parameters
+        #only passed the error to the previous error
+        return np.multiply(self.func.prime(self.input), output_error)
+
 
 class NN(Model):
 
     def __init__(self, lr=0.1, epochs=100, verbose=True):
         """
-        Neural Network model
+        Neural Network model. the default function is MSE.
         :param epochs: number of epochs
         :param lr: learning rate
-        :param verbose:
         """
         self.epochs = epochs
         self.lr = lr
         self.verbose = verbose
         self.layers = []
         self.loss = mse
-        # self.loss_prime = mse_prime
+        self.loss_prime = mse_prime
 
     def add(self, layer):
         """Add a layer to the NN"""
         self.layers.append(layer)
 
     def fit(self, dataset):
-        raise NotImplementedError
+        X, Y = dataset.getXy()
+        self.dataset = dataset
+        self.history = dict()
+        for epoch in range(self.epochs):
+            output = X
+            #forward propagation
+            for layer in self.layers:
+                output = layer.forward(output)
+
+            #back propagation
+            error = self.loss_prime(Y, output)
+            for layer in reversed(self.layers):
+                error = layer.backward(error, self.lr)
+
+            #calculate average error on all samples
+            err = self.loss(Y, output)
+            self.history[epoch] = err
+            if self.verbose:
+                print(f"epoch {epoch+1}/{self.epochs} error = {err}")
+        if not self.verbose:
+            print(f"error = {err}")
+
+        self.is_fitted = True
+
 
     def predict(self, input_data):
         assert self.is_fitted, "Model must be fitted"
