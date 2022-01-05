@@ -23,7 +23,7 @@ class ConfusionMatrix:
     def to_heatmap(self):
         import seaborn as sn
         import matplotlib.pyplot as plt
-        sn.heatmap(self.calc(), annot=True, cmap="Blues", fmt="g")
+        sn.heatmap(self.calc(), annot=True, cmap="flare", fmt="g")
         plt.title("Confusion Matrix")
         plt.show()
 
