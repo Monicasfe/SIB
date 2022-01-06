@@ -158,7 +158,7 @@ class Conv2D(Layer):
         self.stride = stride
         self.padding = padding
         self.weights = np.random.rand(kernel_shape[0], kernel_shape[1], self.in_ch, self.out_ch) - 0.5
-        self.bias = np.zeros((self.out_ch,1))
+        self.bias = np.zeros((self.out_ch, 1))
 
 
     def forward(self, input_v):
