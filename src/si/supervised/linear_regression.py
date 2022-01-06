@@ -40,8 +40,15 @@ class LinearRegression(Model):
 
     def predict(self, x):
         assert self.is_fitted, "Model must be fitted before predicting"
-        x1 = np.hstack(([1], x))
-        return np.dot(self.theta, x1)
+        if x.ndim > 1:
+            res = []
+            for i in x:
+                _x = np.hstack(([1], i))
+                res.append(np.dot(self.theta, _x))
+        else:
+            _x = np.hstack(([1], x))
+            res = np.dot(self.theta, _x)
+        return res
 
     def cost(self, X=None, Y=None, theta=None):
         X = add_intersect(X) if X is not None else self.X
@@ -79,7 +86,7 @@ class LinearRegressionReg(LinearRegression): #Isto  com regularizacao
         n = X.shape[1]
         self.history = {}  # ignorar por enquanto
         self.theta = np.zeros(n)
-        lbds  = np.full(m, self.lbd) #cria um vetor de tamanho m com os valores de lambda
+        lbds = np.full(m, self.lbd) #cria um vetor de tamanho m com os valores de lambda
         lbds[0] = 0 #adiciona um 0 na posica 1 do vetor de lambdas
         for epoch in range(self.epochs):
             #(-Y(T) + theta(T)X(T)) * X ==> gradient
