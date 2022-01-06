@@ -25,7 +25,7 @@ class Dense(Layer):
 
     def __init__(self, input_size, output_size):
         """Fully connecetd layer"""
-        self.weights = np.random.rand(input_size, output_size)
+        self.weights = np.random.rand(input_size, output_size) - 0.5
         #temos tantos bias como o tamnho do output
         self.bias = np.random.rand(1,output_size)
     ##criar uma matriz de pesos
@@ -78,7 +78,7 @@ class Activation(Layer):
 
 class NN(Model):
 
-    def __init__(self, lr=0.1, epochs=100, verbose=True):
+    def __init__(self, lr=0.01, epochs=1000, verbose=True):
         """
         Neural Network model. the default function is MSE.
         :param epochs: number of epochs
