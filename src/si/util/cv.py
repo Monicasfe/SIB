@@ -28,6 +28,7 @@ class CrossValidationScore():
             if not self.score:
                 train_scores.append(self.model.cost())
                 test_scores.append(self.model.cost(test.X, test.Y))
+                y_test = self.model.predict(test.X)
                 pred_y.extend(y_test)
                 true_y.extend(test.Y)
             else:

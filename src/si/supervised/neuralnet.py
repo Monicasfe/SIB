@@ -1,8 +1,8 @@
 import numpy as np
 from src.si.supervised.model import Model
-from scipy import signal
 from abc import ABC, abstractmethod
 from src.si.util.util import mse, mse_prime
+from src.si.util.im2col import pad2D, im2col, col2im
 
 
 
@@ -115,8 +115,10 @@ class NN(Model):
             self.history[epoch] = err
             if self.verbose:
                 print(f"epoch {epoch+1}/{self.epochs} error = {err}")
-        if not self.verbose:
-            print(f"error = {err}")
+            else:
+                print(f"epoch {epoch+1}/{self.epochs} error = {err}", end="\r")
+        # if not self.verbose:
+        #     print(f"error = {err}")
 
         self.is_fitted = True
 
@@ -131,6 +133,68 @@ class NN(Model):
     def cost(self, X=None, Y=None):
         assert self.is_fitted, "Model must be fitted"
         X = X if X is not None else self.dataset.X
-        Y= Y if Y is not None else self.dataset.Y
+        Y = Y if Y is not None else self.dataset.Y
         output = self.predict(X)
         return self.loss(Y, output)
+
+
+class Flatten(Layer):
+
+    def forward(self, input_v):
+        self.input_shape = input_v.shape
+        output = input_v.reshape(input_v.shape[0], -1)
+        return output
+
+    def backward(self, output_error, lr):
+        return output_error.reshape(self.input_shape)
+
+
+class Conv2D(Layer):
+
+    def __init__(self, input_shape, kernel_shape, layer_depth, stride=1, padding=0):
+        self.input_shape = input_shape
+        self.in_ch = input_shape[2]
+        self.out_ch = layer_depth
+        self.stride = stride
+        self.padding = padding
+        self.weights = np.random.rand(kernel_shape[0], kernel_shape[1], self.in_ch, self.out_ch) - 0.5
+        self.bias = np.zeros((self.out_ch,1))
+
+
+    def forward(self, input_v):
+        s = self.stride
+        self.X_shape = input_v.shape
+        _, p = pad2D(input_v, self.padding, self.weights.shape[:2], s)
+        pr1, pr2, pc1, pc2 = p
+        fr, fc, in_ch, out_ch = self.weights.shape
+        n_ex, in_rows, in_cols, in_ch = input_v.shape
+
+        #compute the dimensions of the convolution output
+        out_rows = int((in_rows + pr1 + pr2 - fr) / s + 1)
+        out_cols = int((in_cols + pc1 + pc2 - fc) / s + 1)
+
+        #convert X and W into the appropriate 2D matrices and take their product
+        self.X_col, _ = im2col(input_v, self.weights.shape, p, s)
+        W_col = self.weights.transpose(3, 2, 0, 1).reshape(out_ch, -1)
+
+        output_data = (W_col @ self.X_col + self.bias).reshape(out_ch, out_rows, out_cols, n_ex).transpose(3, 1, 2, 0)
+
+        return output_data
+
+    def backward(self, output_error, lr):
+        fr, fc, in_ch, out_ch = self.weights.shape
+        p = self.padding
+        db = np.sum(output_error, axis=(0, 1, 2))
+        db = db.reshape(out_ch,)
+        dout_reshape = output_error.transpose(1, 2, 3, 0).reshape(out_ch, -1)
+        dW = dout_reshape @ self.X_col.T
+        dW = dW.reshape(self.weights.shape)
+
+        W_reshape = self.weights.reshape(out_ch, -1)
+        dX_dol = W_reshape.T @ dout_reshape
+        input_error = col2im(dX_dol, self.X_shape, self.weights.shape, (p, p, p, p), self.stride)
+
+        self.weights -= lr * dW
+        self.bias -= lr * db
+
+        return input_error
