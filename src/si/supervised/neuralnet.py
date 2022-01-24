@@ -77,7 +77,6 @@ class Activation(Layer):
         #only passed the error to the previous error
         return np.multiply(self.func.prime(self.input), output_error)
 
-
 class NN(Model):
 
     def __init__(self, lr=0.01, epochs=1000, verbose=True):
