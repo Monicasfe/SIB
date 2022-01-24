@@ -94,6 +94,14 @@ def _im2col_indices(X_shape, fr, fc, p, s):
 
 
 def im2col(X, W_shape, pad, stride):
+    p = pad
+    if isinstance(p, int):
+        p = (p, p, p, p)
+
+    if isinstance(p, tuple):
+        if len(p) == 2:
+            p = (p[0], p[0], p[1], p[1])
+
     fr, fc, n_in, n_out = W_shape
     s, p = stride, pad
     n_ex, in_rows, in_cols, n_in = X.shape

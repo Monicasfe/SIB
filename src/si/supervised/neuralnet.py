@@ -255,13 +255,12 @@ class Pooling2D(Layer):
 
         h_out, w_out = int(h_out), int(w_out)
         X_reshaped = input.reshape(n * d, h, w, 1)
-        self.X_col, _ = im2col(X_reshaped, self.size, self.size, pad=0, stride=self.stride) #nao da porque tem mais argumentos que a func que prof forneceu
-
-        print(self.X_col)
+        self.X_col, _ = im2col(X_reshaped, (self.size, self.size, d, d), pad=0, stride=self.stride) #nao da porque tem mais argumentos que a func que prof forneceu
 
         out, self.max_idx = self.pool(self.X_col)
         out = out.reshape(h_out, w_out, n, d)
-        out = out.transpose(3, 2, 0, 1)
+        # out = out.transpose(3, 2, 0, 1)
+        out = out.transpose(0, 1, 2, 3)
 
         return out
 
@@ -298,7 +297,7 @@ class Pooling2D(Layer):
     #             yield img_region, i, j
     #
 
-class MaxPooling(Pooling2D):
+class MaxPooling2D(Pooling2D):
 
     def pool(self, X_col):
         max_idx = np.argmax(X_col, axis=0)
